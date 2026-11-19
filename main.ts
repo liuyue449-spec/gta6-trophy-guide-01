@@ -1,17 +1,14 @@
-// A working gta6-trophy-guide-01 entry (Node 22, standard library only): the guide is this directory's app/ folder,
-// plain static files a browser opens at app/index.html (ES modules, CSS, no build step), offline: it loads nothing
-// over the network, and its trophy list and guides are app/data/trophies.json. The program hands it in: it copies app/
-// and screenshots/ from beside this file to /output and writes /output/dossier.json, the summary the judge reads (your
-// screenshots, the first load's files and bytes, and your source), with the vendored make.fun library. Leave
-// vendor/makefun-frontend.ts as it is: the scorer requires dossier.json to be byte for byte what its own copy writes.
-//
-// Only the plumbing, not a winner: a plain checklist of the 55 trophies with a one-line hint each. Write a real guide
-// for every trophy in your own words, a roadmap to the platinum, filters and a spoiler setting in app/, put 3 or 4 PNG
-// or JPEG screenshots of it in screenshots/ (the first by name is the cover; shots.json says which views this
-// starter's were taken of), and run it.
-//
-// Serve it locally with `node serve.ts`, then open http://localhost:8080.
-// Outside the grader's container, MAKEFUN_OUTPUT_DIR stands in for /output:
+// Entry point for the Leonida trophy guide (make.fun bounty gta6-trophy-guide-01). Node 22, standard library only.
+// The guide itself is the static site in app/: all 55 Grand Theft Auto VI trophies with their official names,
+// descriptions and grades, a written guide and a cited source for each one, a seven-stage roadmap to the platinum,
+// and a checklist whose ticks persist in the browser. It runs fully offline: every file it loads sits under app/,
+// and the only links that leave the machine are the source citations a reader chooses to follow.
+// Running this program is how the entry is handed in: it copies app/ and screenshots/ into the output directory
+// and writes dossier.json there with buildDossier from vendor/makefun-frontend.ts. That vendored file stays
+// exactly as the kit shipped it, because the scorer rebuilds the dossier with its own copy and expects the
+// same bytes back.
+// Try the guide locally with `node serve.ts`, then open http://localhost:8080. Outside the grader's container,
+// MAKEFUN_OUTPUT_DIR names the output directory:
 //   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 
 import { cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';

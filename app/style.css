@@ -1,7 +1,165 @@
-body { font-family: Arial, sans-serif; margin: 24px; color: #222; }
-header { display: flex; justify-content: space-between; align-items: baseline; }
-.controls { display: flex; gap: 16px; margin: 12px 0; align-items: center; }
-.import input { font-size: 12px; }
-table { border-collapse: collapse; width: 100%; }
-th, td { border-bottom: 1px solid #ddd; padding: 6px 8px; text-align: left; vertical-align: top; white-space: pre-line; }
-th { background: #f2f2f2; }
+/* Leonida Trophy Guide — own look: deep night blue, sunset amber, clean cards. No external assets. */
+:root {
+  --bg: #0d1220;
+  --panel: #161d31;
+  --panel-2: #1d2742;
+  --line: #2b3757;
+  --text: #eef1f8;
+  --muted: #9aa7c4;
+  --accent: #ffb347;
+  --accent-2: #ff5e7a;
+  --platinum: #bfe3ff;
+  --gold: #ffd257;
+  --silver: #cfd6e4;
+  --bronze: #e09a63;
+  --danger: #ff6b6b;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.45;
+}
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
+
+/* header */
+.topbar {
+  background: linear-gradient(135deg, #131c38 0%, #1d1440 55%, #3a1430 100%);
+  border-bottom: 2px solid var(--accent);
+  padding: 22px 0 16px;
+}
+.topbar h1 { margin: 0 0 6px; font-size: 32px; letter-spacing: .5px; }
+.tagline { margin: 0 0 10px; color: var(--muted); max-width: 900px; font-size: 15px; }
+.stats { margin: 0 0 10px; font-size: 13px; color: var(--accent); font-weight: 600; letter-spacing: .3px; }
+.progress { height: 12px; background: #0a0e1a; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; max-width: 640px; }
+.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .25s ease; }
+.progress-label { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+
+/* tabs */
+.tabs { display: flex; gap: 8px; padding-top: 14px; }
+.tab {
+  background: var(--panel); color: var(--muted); border: 1px solid var(--line);
+  border-radius: 8px 8px 0 0; padding: 9px 16px; font-size: 14px; cursor: pointer;
+}
+.tab.active { background: var(--panel-2); color: var(--text); border-bottom-color: var(--panel-2); font-weight: 600; }
+
+/* controls */
+.controls {
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  padding: 12px; margin: 14px 0 8px;
+}
+.controls input[type="search"] {
+  background: #0a0e1a; color: var(--text); border: 1px solid var(--line);
+  border-radius: 6px; padding: 8px 10px; font-size: 14px; min-width: 190px;
+}
+.kinds { display: flex; flex-wrap: wrap; gap: 6px; }
+.kind {
+  background: #0a0e1a; color: var(--muted); border: 1px solid var(--line);
+  border-radius: 999px; padding: 6px 12px; font-size: 13px; cursor: pointer;
+}
+.kind.active { background: var(--accent); border-color: var(--accent); color: #22160a; font-weight: 700; }
+.grade-label { font-size: 13px; color: var(--muted); display: flex; gap: 6px; align-items: center; }
+.grade-label select {
+  background: #0a0e1a; color: var(--text); border: 1px solid var(--line);
+  border-radius: 6px; padding: 7px; font-size: 13px;
+}
+.toggle { font-size: 13px; color: var(--muted); display: flex; gap: 6px; align-items: center; cursor: pointer; }
+.controls button#exportBtn, .controls button#importBtn {
+  background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+  border-radius: 6px; padding: 8px 12px; font-size: 13px; cursor: pointer;
+}
+.spacer { flex: 1; }
+.result-count { color: var(--muted); font-size: 13px; margin: 4px 2px 10px; }
+
+/* checklist layout */
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 16px; align-items: start; }
+.trophy-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.trophy {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px 12px; cursor: pointer;
+}
+.trophy:hover { border-color: var(--accent); }
+.trophy.selected { border-color: var(--accent); background: var(--panel-2); }
+.trophy.earned { opacity: .78; }
+.trophy input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--accent); flex: none; cursor: pointer; }
+.trophy .body { min-width: 0; }
+.trophy .name { font-weight: 700; font-size: 15px; }
+.trophy.earned .name { text-decoration: line-through; text-decoration-color: var(--accent); }
+.trophy .desc { color: var(--muted); font-size: 13.5px; margin-top: 1px; }
+.trophy .target { color: var(--accent); font-size: 12.5px; margin-top: 2px; }
+.chip {
+  display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .4px;
+  border-radius: 4px; padding: 1px 6px; margin-left: 6px; vertical-align: 2px; text-transform: uppercase;
+}
+.chip.grade-platinum { background: #173a52; color: var(--platinum); }
+.chip.grade-gold { background: #4d3a08; color: var(--gold); }
+.chip.grade-silver { background: #333c4e; color: var(--silver); }
+.chip.grade-bronze { background: #4a2c14; color: var(--bronze); }
+.chip.hidden-flag { background: #26304d; color: #a9bce8; }
+.chip.missable-flag { background: #5a1616; color: var(--danger); }
+.chip.stage-flag { background: #14352b; color: #7fe0b2; }
+.empty { background: var(--panel); border: 1px dashed var(--line); border-radius: 10px; padding: 22px; color: var(--muted); }
+
+/* detail panel */
+.detail {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  padding: 16px; position: sticky; top: 12px;
+}
+.detail h2 { margin: 0 0 4px; font-size: 20px; }
+.detail .official { color: var(--muted); font-style: italic; margin: 0 0 10px; font-size: 14px; }
+.detail .warn {
+  background: #3d1010; border: 1px solid var(--danger); color: #ffb3b3;
+  border-radius: 8px; padding: 8px 10px; font-size: 13.5px; margin: 0 0 10px;
+}
+.detail .guide { font-size: 14.5px; margin: 0 0 12px; }
+.detail h3 { margin: 12px 0 6px; font-size: 13px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); }
+.detail ul.sources { margin: 0; padding-left: 18px; font-size: 13.5px; }
+.detail ul.sources a { color: var(--accent); }
+.detail .meta { font-size: 13px; color: var(--muted); margin: 0 0 8px; }
+.detail .placeholder { color: var(--muted); font-size: 14px; }
+
+/* roadmap */
+#roadmapView h2 { margin: 18px 0 6px; }
+.roadmap-intro { color: var(--muted); max-width: 900px; margin: 0 0 14px; }
+.stage {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  padding: 14px 16px; margin-bottom: 12px;
+}
+.stage h3 { margin: 0 0 2px; font-size: 17px; }
+.stage h3 .n { color: var(--accent); }
+.stage .when { color: var(--accent-2); font-size: 12.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+.stage p { margin: 8px 0 10px; font-size: 14.5px; }
+.stage .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.stage .tchip {
+  background: #0a0e1a; border: 1px solid var(--line); border-radius: 999px;
+  padding: 4px 10px; font-size: 12.5px; cursor: pointer; color: var(--text);
+}
+.stage .tchip:hover { border-color: var(--accent); }
+.stage .tchip.done { opacity: .55; text-decoration: line-through; }
+
+.foot { color: var(--muted); font-size: 12.5px; padding-top: 18px; padding-bottom: 26px; }
+
+/* compact (focused guide) view: slimmer header so the guide and its sources lead */
+body.compact .topbar { padding: 12px 0 10px; }
+body.compact .topbar h1 { font-size: 25px; margin-bottom: 2px; }
+body.compact .tagline { display: none; }
+body.compact .detail .guide { font-size: 14px; }
+body.compact .tabs { padding-top: 8px; }
+body.compact .controls { margin-top: 8px; padding: 8px 12px; }
+body.compact .detail { padding: 13px; }
+body.compact .stats { display: none; }
+body.compact .progress { display: none; }
+body.compact .progress-label { display: none; }
+body.compact .detail .guide { line-height: 1.35; }
+body.compact .detail .warn { padding: 6px 8px; margin-bottom: 8px; }
+body.compact .detail h3 { margin: 8px 0 4px; }
+body.compact .detail ul.sources { font-size: 12.5px; }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .detail { position: static; }
+}
